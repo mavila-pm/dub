@@ -1,93 +1,51 @@
-# Dub: preparación para ChatGPT Sites
+# Dub en ChatGPT Sites — estado verificado
 
-Fecha de revisión: 2 de noviembre de 2026 (America/Lima).
+Revisión: 2 de noviembre de 2026 (America/Lima).
 
-## Estado verificable
+## Resultado
 
-- CONFIRMADO: repositorio `mavila-pm/dub` creado como fork público de `dubinc/dub.link`, copiando su rama `main`.
-- Base revisada: `6b463b4bdd9ed2fd9aa416f67b5b77d317b1471e`.
-- VERIFICADO: código original descargado y requisitos contrastados con la guía oficial de autoalojamiento.
-- PENDIENTE: elegir entre conservar el producto original con servicios externos o realizar una adaptación para Sites.
-- NO IMPLEMENTADO: adaptación de runtime, datos y autenticación.
-- NO DESPLEGADO: no existe todavía una aplicación publicada ni una URL de producción validada.
+El alcance confirmado por Mauro se concentra en enlaces, QR, estadísticas y procedencia de las visitas. Se implementó una adaptación para Sites en `apps/sites`, conservando la aplicación original del upstream en `apps/web` y sus paquetes.
 
-## Objetivo confirmado
+La versión inicial está publicada en https://dub-vocera-links.oxyfps.chatgpt.site con acceso privado del propietario. No se ha habilitado acceso público. Para campañas con destinatarios anónimos se requiere solicitar explícitamente el cambio de audiencia; el panel y sus APIs permanecen restringidos al propietario por autorización de servidor incluso si el Site pasa a público.
 
-Disponer de una aplicación de enlaces basada en Dub, con código en este repositorio y publicación en ChatGPT Sites. El uso previsto es gestionar enlaces y medir clics de campañas. No se ha aprobado contratar servicios de pago ni reemplazar todo Dub por una aplicación de alcance reducido.
+## Implementado
 
-## Resultado del preflight
+- Enlaces con alias único, destino editable, pausa y reactivación.
+- Canal, campaña y medio UTM; parámetros del destino preservados.
+- QR SVG y PNG de 1 024 px; los escaneos se distinguen con `via=qr`.
+- Clics, escaneos, serie por día, canal asignado, host de procedencia, país aproximado, dispositivo, navegador y visitas recientes.
+- Estadísticas por enlace, períodos de 7/30/90 días o histórico y CSV.
+- Persistencia D1, migración de esquema y autorización con identidad de ChatGPT.
+- Bots/previsualizaciones/prefetch conocidos separados; HEAD no suma visitas.
 
-El repositorio actual no es un sitio estático. Su aplicación principal usa Next.js 15.5.8 y un conjunto de servicios externos. El flujo soportado para aplicaciones con servidor en Sites usa Vinext o un Worker ESM y almacenamiento D1/R2; no instala automáticamente la infraestructura de Dub.
+## Evidencia
 
-Esto identifica trabajo de migración, no demuestra que una adaptación futura sea imposible. No se ha ejecutado un build de Dub contra Sites y no se afirma compatibilidad de la aplicación completa.
+- Fuente de Sites publicada: `80f165e8c7d2ba8fc67fa49edd85fef6183565c3`.
+- Build Vinext/Worker: correcto.
+- TypeScript sin errores.
+- Prueba de integración de los handlers reales con D1 aislada: correcta para permisos, CSRF, protocolos seguros, colisiones, redirecciones, UTMs, QR, origen, dispositivos, bots, prefetch, HEAD, edición, pausa/reactivación, filtros y CSV.
+- Lector QR independiente ZXing-C++: decodificó la URL de seguimiento exacta con `via=qr`.
+- Revisión visual en navegador: panel y formulario. El preview no incluye una sesión de propietario; la gestión funcional se validó en el entorno de pruebas aislado.
+- Publicación nativa de Sites: `succeeded`, versión 1.
 
-| Componente | Evidencia en el código revisado | Requisito para continuar |
-| --- | --- | --- |
-| Runtime | `apps/web/package.json`: `next build`; `apps/web/next.config.js` configura Webpack, cabeceras, redirecciones y proxies | Adaptar y verificar el build para el runtime de Sites |
-| Datos | `apps/web/prisma/schema/schema.prisma`: proveedor MySQL y `DATABASE_URL` | Conectar una base compatible por una vía admitida o migrar el modelo y las consultas a D1 |
-| Caché/redirecciones | `apps/web/lib/upstash/redis.ts` exige URL y token REST | Conectar Redis externo o reemplazar su uso y validar las redirecciones |
-| Analítica | `apps/web/.env.example`: `TINYBIRD_API_KEY` y `TINYBIRD_API_URL`; paquetes de Tinybird | Conectar Tinybird o implementar y verificar otra persistencia de eventos |
-| Colas | `apps/web/.env.example`: variables QStash | Revisar los flujos necesarios y conectar o sustituir las colas |
-| Identidad | NextAuth y sus adaptadores/proveedores en `apps/web/package.json` y `.env.example` | Integrar la identidad de ChatGPT y autorizar operaciones en servidor |
-| Dominios | Variables de la API de Vercel; middleware que distingue aplicación, API y dominios cortos | Rediseñar la resolución de rutas y la gestión de dominios para Sites |
+No se afirman pruebas de tráfico real de campañas ni atribución perfecta.
 
-Las claves nombradas son requisitos del software, no credenciales configuradas. No se han obtenido ni almacenado secretos del usuario en este repositorio.
+## Límites que afectan la interpretación
 
-## Rutas concretas
+El canal asignado representa dónde se distribuyó ese enlace; no garantiza el origen real si se vuelve a compartir. El Referer puede faltar en apps y navegadores. En ese caso se muestra `Directo / no disponible`. Se cuentan visitas, no personas únicas. La clasificación de bots es heurística y el país es aproximado. No se guardan IP, cookies ni identidades de visitantes en los eventos.
 
-### A. Conservar Dub original
+La lista muestra hasta 1 000 enlaces, la exportación hasta 10 000 eventos y el gráfico histórico hasta 180 días; los totales agregan el período completo. No incluye funciones Enterprise, afiliados, pagos ni conversiones.
 
-Conservar la aplicación y seguir la arquitectura de autoalojamiento documentada por Dub: MySQL, Redis/QStash, Tinybird y hosting compatible. La guía oficial utiliza Vercel. Requiere configurar las cuentas y credenciales correspondientes, comprobar las condiciones vigentes y aprobar cualquier coste antes de contratarlo. Sustituir Sites por otro hosting cambia el destino solicitado.
+## Operación
 
-### B. Adaptar una versión para Sites
+`ADMIN_EMAIL` está configurado como secreto del servidor; su valor no se guarda en el repositorio. D1 es la base de datos de Sites. No se contrataron servicios externos de pago ni se modificaron DNS. Un dominio corto personalizado se configura aparte; la URL actual es principalmente una URL de seguimiento.
 
-Crear una rama separada de implementación, preservando esta copia del proyecto original.
-
-Alcance propuesto para una primera versión:
-
-- Crear, editar, buscar y pausar enlaces con alias.
-- Redirigir por URL y registrar eventos reales.
-- Mostrar clics por enlace, fecha y referencia cuando esté disponible.
-- Gestionar parámetros UTM y generar códigos QR.
-- Proteger el panel y las escrituras con identidad y autorización de servidor.
-- Guardar enlaces y eventos de forma persistente en D1.
-
-No prometer paridad con todo Dub. Conversiones, afiliados, integraciones y dominios personalizados requieren definir alcance y pruebas adicionales. Esta ruta necesita confirmar la reducción de alcance antes de sustituir componentes del producto.
-
-## Acceso y publicación
-
-Los Sites nuevos empiezan privados. Un sitio privado exige iniciar sesión también al abrir sus enlaces. Para utilizar redirecciones anónimas en campañas reales será necesario definir una audiencia pública y mantener protegidos el panel y todas las escrituras. No se ha cambiado ninguna política de acceso.
-
-## Criterios de aceptación del futuro despliegue
-
-1. Build compatible con el runtime de Sites.
-2. Datos persistentes al cerrar y abrir otra sesión.
-3. Redirecciones válidas con alias únicos y validación de protocolos de destino.
-4. Registro de clics y exclusión de previsualizaciones/bots cuando se implemente; no equiparar clics con personas únicas.
-5. Escrituras y estadísticas privadas autorizadas en servidor.
-6. Comprobar la experiencia de un visitante anónimo antes de usar enlaces en campañas.
-7. No incluir secretos en Git, archivos de hosting ni código del navegador.
-8. Validar migraciones, errores, recuperación y una reversión antes de publicar.
-
-## Licencia
-
-Se conserva `LICENSE.md` del upstream. El repositorio declara AGPLv3 para el núcleo y excepciones comerciales para las rutas indicadas por su licencia. Cualquier distribución o adaptación debe conservar avisos y respetar los términos aplicables. No se habilitarán funcionalidades comerciales como si fueran gratuitas.
-
-## Fuentes
-
-- [Repositorio oficial](https://github.com/dubinc/dub.link).
-- [Guía oficial de autoalojamiento](https://dub.co/docs/self-hosting).
-- [Configuración de ejemplo](https://github.com/dubinc/dub.link/blob/6b463b4bdd9ed2fd9aa416f67b5b77d317b1471e/apps/web/.env.example).
-- [Aplicación web](https://github.com/dubinc/dub.link/blob/6b463b4bdd9ed2fd9aa416f67b5b77d317b1471e/apps/web/package.json).
-- [Licencia original](https://github.com/dubinc/dub.link/blob/6b463b4bdd9ed2fd9aa416f67b5b77d317b1471e/LICENSE.md).
+La documentación y los comandos de desarrollo y pruebas están en `apps/sites/README.md`. Las licencias y avisos originales se conservan.
 
 ## Checkpoint
 
-Próximo paso: resolver la ruta de arquitectura con Mauro y ejecutar la implementación correspondiente. No hay servicios de pago contratados, credenciales de terceros creadas ni un despliegue que deba continuarse.
+Pendiente para campañas anónimas: autorización expresa del propietario para que el Site sea público, conservando el panel protegido, y una comprobación posterior de acceso anónimo.
 
 ## Token audit
 
-Skills y contexto: Sites, Senior Product Engineer y Browser; código y documentación oficial.
-Consumo real: no disponible.
-Desperdicio observado: algunas salidas de descubrimiento demasiado extensas.
-Ajuste siguiente: limitar resultados a nombres, rutas y fragmentos necesarios.
+Skills: Sites, Senior Product Engineer y Browser. Consumo real: no disponible. Se evitó instalar la infraestructura completa del upstream; la adaptación utiliza persistencia nativa y mantiene las dependencias del starter. La evidencia queda en GitHub, sin secretos.
