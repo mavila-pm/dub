@@ -6,7 +6,7 @@ Revisión: 2 de noviembre de 2026 (America/Lima).
 
 El alcance confirmado por Mauro se concentra en enlaces, QR, estadísticas y procedencia de las visitas. Se implementó una adaptación para Sites en `apps/sites`, conservando la aplicación original del upstream en `apps/web` y sus paquetes.
 
-La versión inicial está publicada en https://dub-vocera-links.oxyfps.chatgpt.site con acceso privado del propietario. No se ha habilitado acceso público. Para campañas con destinatarios anónimos se requiere solicitar explícitamente el cambio de audiencia; el panel y sus APIs permanecen restringidos al propietario por autorización de servidor incluso si el Site pasa a público.
+La aplicación está publicada en https://click.vocera.lat/ con dominio personalizado y HTTPS activos. La dirección original https://dub-vocera-links.oxyfps.chatgpt.site sigue disponible. Se conserva el acceso privado del propietario. No se ha habilitado acceso público. Para campañas con destinatarios anónimos se requiere solicitar explícitamente el cambio de audiencia; el panel y sus APIs permanecen restringidos al propietario por autorización de servidor incluso si el Site pasa a público.
 
 ## Implementado
 
@@ -38,7 +38,7 @@ La lista muestra hasta 1 000 enlaces, la exportación hasta 10 000 eventos y el 
 
 ## Operación
 
-`ADMIN_EMAIL` está configurado como secreto del servidor; su valor no se guarda en el repositorio. D1 es la base de datos de Sites. No se contrataron servicios externos de pago ni se modificaron DNS. Un dominio corto personalizado se configura aparte; la URL actual es principalmente una URL de seguimiento.
+`ADMIN_EMAIL` está configurado como secreto del servidor; su valor no se guarda en el repositorio. D1 es la base de datos de Sites. No se contrataron servicios externos de pago. Se conectó `click.vocera.lat` mediante tres registros nuevos en Namecheap: CNAME `click` a `custom-domains.chatgpt.site.`, TXT `_openai-site-verification.click` y TXT `_cf-custom-hostname.click`. La comparación de la lista anterior y posterior confirmó que los 10 registros originales permanecieron sin cambios (13 registros al terminar). No se cambiaron los servidores DNS ni las políticas de acceso del Site. Sites confirmó dominio activo, proveedor activo y SSL activo; la sesión del propietario abrió correctamente el panel en el dominio personalizado.
 
 La documentación y los comandos de desarrollo y pruebas están en `apps/sites/README.md`. Las licencias y avisos originales se conservan.
 
