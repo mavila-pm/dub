@@ -1,9 +1,0 @@
-export const SLACK_INTEGRATION_ID = "clzu59rx9000110bm5fnlzwuj";
-export const STRIPE_INTEGRATION_ID = "clzra1ya60001wnj4a89zcg9h";
-export const SEGMENT_INTEGRATION_ID = "int_zGnSElTzimbz20OWnXerPoKv";
-export const ZAPIER_INTEGRATION_ID = "clzlmz336000fjeqynwhfv8vo";
-export const SHOPIFY_INTEGRATION_ID = "int_iWOtrZgmcyU6XDwKr4AYYqLN";
-export const HUBSPOT_INTEGRATION_ID = "int_ffw3qgrFAahY6qs1hXaH3wHS";
-export const APPSFLYER_INTEGRATION_ID = "int_1KN8JP7ET3VQQRF7ZQEVNFPJ5";
-export const GOOGLE_ADS_INTEGRATION_ID = "int_1M096GK5Q66FJ78WQAH82SD7V";
-export const SINGULAR_INTEGRATION_ID = "int_1K0F60E21R1F43ZBNES3RG81P";

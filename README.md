@@ -1,103 +1,72 @@
-<a href="https://dub.co">
-  <img alt="Dub is the modern, open-source link attribution platform for short links and conversion tracking." src="https://github.com/user-attachments/assets/42cf0705-f5a2-4200-bc4a-c5acf0ba9e15">
-</a>
+# Dub / Vocera Links — ChatGPT Business
 
-<h3 align="center">Dub Links</h3>
+Adaptación para Sites extraída de `mavila-pm/dub/apps/sites` (commit `1643e1d828af79562fa83ae8cf6f45ff2e6e2894`). Aquí la aplicación está en la raíz, independiente del monorepo original. El código original permanece en `main`.
 
-<p align="center">
-    The open-source link attribution platform.
-    <br />
-    <a href="https://dub.co/links"><strong>Learn more »</strong></a>
-    <br />
-    <br />
-    <a href="#introduction"><strong>Introduction</strong></a> ·
-    <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
-    <a href="#self-hosting"><strong>Self-hosting</strong></a> ·
-    <a href="#contributing"><strong>Contributing</strong></a>
-</p>
+## Importar en Business
 
-<p align="center">
-  <a href="https://twitter.com/dubdotco">
-    <img src="https://img.shields.io/twitter/follow/dubdotco?style=flat&label=%40dubdotco&logo=twitter&color=0bf&logoColor=fff" alt="Twitter" />
-  </a>
-  <a href="https://news.ycombinator.com/item?id=32939407"><img src="https://img.shields.io/badge/Hacker%20News-255-%23FF6600" alt="Hacker News"></a>
-  <a href="https://github.com/dubinc/dub/blob/main/LICENSE.md">
-    <img src="https://img.shields.io/github/license/dubinc/dub?label=license&logo=github&color=f80&logoColor=fff" alt="License" />
-  </a>
-</p>
+1. Abrir este repositorio, rama `business-migration`, desde la cuenta Business.
+2. Crear un Site nuevo con esta fuente. El manifiesto conserva `d1: "DB"` y no reutiliza el project_id personal; guardar el identificador nuevo devuelto por Sites.
+3. Configurar `ADMIN_EMAIL` en el entorno del Site destino. Los valores privados no se guardan en Git.
+4. Instalar con el gestor de `packageManager`; ejecutar `npm run check`, `npm test` y construir con los helpers actuales de Sites.
+5. Validar acceso del administrador, creación/edición de enlaces, redirecciones, QR y estadísticas.
 
-<br/>
+**Los enlaces y las visitas existentes están en D1 y no se transfieren con Git.** Crear una base nueva sin importar esos registros dejará sin destino los alias antiguos. Exportar/importar los datos mediante un canal privado, conservar IDs y alias y verificar los enlaces antes de cambiar el dominio.
 
-## Introduction
+Con la aplicación nueva y los datos validados, conectar `click.vocera.lat` en Business. Mantener el acceso público necesario para que las redirecciones funcionen sin sesión; el panel sigue protegido por autorización en servidor.
 
-[Dub Links](https://dub.co/links) is the modern, open-source link attribution platform for [short links](https://dub.co/links) and [conversion tracking](https://dub.co/analytics).
+La identidad del Site personal coincide con el manifiesto del código original. La exportación directa de Sites está bloqueada por una migración de la plataforma; no se pudo cotejar el commit publicado `80f165e8c7d2ba8fc67fa49edd85fef6183565c3` con esta copia de GitHub.
 
-Our platform powers 250M+ clicks and 12M+ links monthly, and is used by world-class engineering teams at Twilio, Zillow, Jobber, Vercel, Raycast, and [more](https://dub.co/customers).
+No se ha desplegado esta rama ni se han modificado dominios o datos de producción.
 
-## Tech Stack
+---
 
-- [Next.js](https://nextjs.org/) – framework
-- [TypeScript](https://www.typescriptlang.org/) – language
-- [Tailwind](https://tailwindcss.com/) – CSS
-- [Prisma](https://www.prisma.io/) – ORM
-- [Upstash](https://upstash.com/) – redis
-- [Tinybird](https://tinybird.com/) – analytics
-- [PlanetScale](https://planetscale.com/) – database
-- [NextAuth.js](https://next-auth.js.org/) – auth
-- [BoxyHQ](https://boxyhq.com/enterprise-sso) – SAML/SSO
-- [Turborepo](https://turbo.build/repo) – monorepo
-- [Stripe](https://stripe.com/) – payments
-- [Resend](https://resend.com/) – emails
-- [Vercel](https://vercel.com/) – deployments
+# Dub para Sites
 
-## Self-Hosting
+Versión enfocada en enlaces, QR y estadísticas de tráfico. Forma parte del fork `mavila-pm/dub`; el código original de Dub se conserva en el repositorio y esta adaptación vive en `apps/sites`.
 
-You can self-host Dub for greater control over your data and design. [Read this guide](https://dub.co/docs/self-hosting/guide) to learn more.
+## Incluye
 
-## Contributing
+- Enlaces con alias, destino editable y pausa/reactivación.
+- Canales de campaña y parámetros UTM conservando otros parámetros del destino.
+- QR SVG y PNG que codifican el enlace corto con `?via=qr` para distinguir escaneos.
+- Visitas por enlace, día, origen detectado, canal asignado, país aproximado, dispositivo y navegador.
+- Períodos de 7, 30 y 90 días o histórico, visitas recientes y exportación CSV (máximo 10 000 filas por exportación).
+- Persistencia en D1; no se usa localStorage como base de datos.
+- Gestión privada del propietario mediante identidad de ChatGPT y `ADMIN_EMAIL` configurado en el servidor.
 
-We love our contributors! Here's how you can contribute:
+## Interpretación correcta
 
-- [Open an issue](https://github.com/dubinc/dub/issues) if you believe you've encountered a bug.
-- Follow the [local development guide](https://dub.co/docs/local-development) to get your local dev environment set up.
-- Make a [pull request](https://github.com/dubinc/dub/pull) to add new features/make quality-of-life improvements/fix bugs.
+El canal asignado es una etiqueta de distribución, no prueba del lugar real de cada visita. El origen detectado usa el host del Referer, cuando existe. Algunas apps eliminan esa información: se informa `Directo / no disponible`, sin inventar atribución. Reutilizar un enlace en varios canales impide conocer con certeza el canal de cada visita sin Referer.
 
-### Recommended Versions
+Las cifras cuentan visitas, no personas únicas. Los bots conocidos, previsualizaciones y prefetch detectados se excluyen por heurística; HEAD no suma visitas. La identificación de bots no es exhaustiva. No se guardan IP, cookies de seguimiento ni identidades de visitantes. La aplicación conserva la información mínima del evento: enlace, fecha, país aproximado, dispositivo, navegador, host de referencia, canal y campaña.
 
-| Package | Version  |
-| ------- | -------- |
-| node    | v23.11.0 |
-| pnpm    | 9.15.9   |
+La lista del panel muestra los últimos 1 000 enlaces; las estadísticas agregan todos los enlaces del propietario. El gráfico histórico muestra hasta 180 días recientes, mientras que las cifras históricas incluyen todo el período. Las clasificaciones muestran los principales orígenes (12 en la API, 6 en cada tarjeta).
 
-### Common Local Development Issues
+## Entorno
 
-- `The table <table-name> does not exist in the current database.` - Run `pnpm prisma:push` push the state of the Prisma schema file to the database without using migrations files.
-- The project is not building correctly locally - verify your versions of `node` and `pnpm` match the recommended versions above. Delete all `node_modules`, `.next`, and `.turbo` directories in the `apps` and `packages` directory. You may now reinstall `node_modules` by running `pnpm install` and attempt to rebuild the project with `pnpm build`.
+Node 22.13+ y el gestor indicado por `packageManager`. Se conservan los scripts de Sites/Vinext y la integración `sites()` de Vite.
 
-### Dev Seed Script
+Configurar la variable de servidor `ADMIN_EMAIL` como secreto en Sites, con el correo de la cuenta propietaria. Nunca subir sus valores a Git. `.openai/hosting.json` configura D1 como `DB`; Sites crea la base y aplica las migraciones al publicar. La base local y la de producción son independientes.
 
-This script seeds the database with development data for testing and development purposes.
+Para generar migraciones: `npm run db:generate`. No modificar una migración ya aplicada; añadir otra.
 
-**Basic seeding (adds data without deleting existing data):**
+## Verificación
 
-```bash
-cd apps/web
-pnpm run script dev/seed
-```
+- `npm run check`: TypeScript.
+- `npm test`: integra los handlers reales con una D1 aislada mediante Miniflare. Comprueba autorización, CSRF, protocolos, alias, redirecciones, UTMs, QR, Referer, bots, prefetch, HEAD, edición, pausa y CSV. No necesita cuentas externas y no accede a producción.
+- Build y publicación: utilizar los helpers oficiales del plugin Sites, conservando su manifiesto y sincronizando la fuente antes de guardar y desplegar.
 
-**Truncate database before seeding (deletes all existing data first):**
+Los artefactos de prueba se guardan en `work/`, ignorado por Git. `scripts/test-worker.ts` solo se usa en pruebas y nunca se importa en la aplicación.
 
-```bash
-cd apps/web
-pnpm run script dev/seed --truncate
-```
+## Acceso público
 
-When using `--truncate`, the script will ask for confirmation before deleting any data.
+Un Site privado exige inicio de sesión incluso para seguir los enlaces cortos. Antes de usarlo en campañas anónimas, el propietario debe solicitar acceso público al Site. Eso no hace públicos los datos ni las escrituras del panel: ambas superficies siguen autorizadas en servidor exclusivamente para `ADMIN_EMAIL`.
 
-## Repo Activity
+## Alcance
 
-![Dub repo activity – generated by Axiom](https://repobeats.axiom.co/api/embed/6ac4c94a89ea20e2e10032b932a128b6d8442e66.svg "Repobeats analytics image")
+Esta adaptación no incluye afiliados, pagos, conversiones, cuentas de equipo ni paridad con todas las funciones de Dub. El dominio provisto por Sites puede ser más largo que el destino; es una URL de seguimiento. Un dominio corto personalizado requiere configurarlo por separado.
 
-## License
+## Licencias y origen
 
-Dub Technologies, Inc. is a commercial open-source company, which means some parts of this open-source repository require a commercial license. The concept is called "Open Core" where the core technology (99%) is fully open source, licensed under [AGPLv3](https://opensource.org/license/agpl-v3) and the last 1% is covered under a commercial license (["/ee" Enterprise Edition](<https://github.com/dubinc/dub/tree/ee/apps/web/app/(ee)>)) which we believe is entirely relevant for larger organisations that require enterprise features. Enterprise features are built by the core engineering team of Dub Technologies, Inc., which is hired full-time.
+Núcleo de esta adaptación: AGPL-3.0-or-later. Biblioteca QR tomada de `apps/web/lib/qr/codegen.ts` de Dub, basada en Project Nayuki (MIT). Consultar `THIRD_PARTY_NOTICES.md` y la licencia original conservada. Los scripts y dependencias mantienen sus licencias correspondientes. No se ha incorporado funcionalidad Enterprise.
+

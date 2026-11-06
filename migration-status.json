@@ -1,0 +1,12 @@
+{
+  "name": "dub",
+  "project_id": "appgprj_6ae928e04d748191af028d76aacd2d8b",
+  "version_number": 1,
+  "source_commit_sha": "80f165e8c7d2ba8fc67fa49edd85fef6183565c3",
+  "export_status": "blocked_sites_workspace_migration",
+  "verified_at": "2026-11-06",
+  "candidate_source": "GitHub main:apps/sites",
+  "candidate_commit": "1643e1d828af79562fa83ae8cf6f45ff2e6e2894",
+  "requires_private_database_transfer": true,
+  "published_commit_equality_verified": false
+}
